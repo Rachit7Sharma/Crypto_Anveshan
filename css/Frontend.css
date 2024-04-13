@@ -22,46 +22,41 @@
   .transaction-form {
     width: 30%;
     padding: 20px;
-    border: 2px solid #98C1D9; /* Subtle green */
+    border: 2px solid #98C1D9; 
     border-radius: 5px;
-    background-color: #F3F0F5; /* Light gray */
+    background-color: #F3F0F5; 
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
   }
   
-  /* Dark blue text */
   .balance-item {
     margin-bottom: 10px;
-    color: #34495E; /* Dark blue */
+    color: #34495E; 
   }
   
-  /* Light gray background for form elements */
   .form-group {
     margin-bottom: 15px;
   }
   
-  /* Light gray background with subtle magenta border */
   input[type="text"],
   select {
     width: calc(100% - 22px);
     padding: 10px;
-    border: 1px solid #B5838D; /* Subtle magenta */
+    border: 1px solid #B5838D; 
     border-radius: 5px;
-    background-color: #F3F0F5; /* Light gray */
+    background-color: #F3F0F5; 
   }
   
-  /* Vibrant pink button with white text */
   button {
     padding: 10px 20px;
-    background-color: #FF85A2; /* Vibrant pink */
+    background-color: #FF85A2; 
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
   }
   
-  /* Lighter pink button on hover */
   button:hover {
-    background-color: #FFA6BB; /* Lighter pink */
+    background-color: #FFA6BB; 
   }
   
