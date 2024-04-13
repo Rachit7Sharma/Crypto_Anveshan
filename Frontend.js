@@ -5,7 +5,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Blockchain Wallet Dashboard</h1>
+        <h1>Crypto Anveshan</h1>
       </header>
       <main>
         {}
