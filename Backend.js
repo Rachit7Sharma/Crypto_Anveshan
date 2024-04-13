@@ -21,8 +21,8 @@ const userSchema = new mongoose.Schema({
     ethereumPrivateKey: String,
     bitcoinAddress: String,
     bitcoinPrivateKey: String,
-    meowcoinAddress: String, // Meowcoin wallet address
-    meowcoinPrivateKey: String, // Private key for Meowcoin wallet
+    meowcoinAddress: String, 
+    meowcoinPrivateKey: String, 
 });
 
 const User = mongoose.model('User', userSchema);
@@ -34,21 +34,17 @@ const bitcoinClient = new bitcoin.ElectrumClient('electrumx-server.example.org',
 
 bitcoinClient.connect();
 
-const meowcoinNetwork = 'mainnet'; // Assuming Meowcoin uses a mainnet
+const meowcoinNetwork = 'mainnet'; 
 
-// Define routes
 
 app.post('/api/register', async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        // Generate Ethereum wallet for the user
         const ethereumWallet = web3.eth.accounts.create();
         
-        // Generate Bitcoin wallet for the user
         const bitcoinWallet = bitcoin.ECPair.makeRandom({ network: bitcoinNetwork });
 
-        // Generate Meowcoin wallet for the user
         const meowcoinPrivateKey = Meowcoin.generatePrivateKey();
         const meowcoinPublicKey = Meowcoin.getPublicKey(meowcoinPrivateKey);
         const meowcoinAddress = Meowcoin.getAddress(meowcoinPublicKey);
@@ -137,7 +133,6 @@ app.get('/api/users/:username/meowcoin-wallet', authenticateToken, async (req, r
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Placeholder function, replace with actual Meowcoin balance retrieval
         const balance = await Meowcoin.getBalance(user.meowcoinAddress);
         res.json({ meowcoin: balance });
     } catch (error) {
@@ -149,13 +144,11 @@ app.post('/api/ethereum-transactions', authenticateToken, async (req, res) => {
     try {
         const { username, amount, recipient } = req.body;
         
-        // Find user
         const sender = await User.findOne({ username });
         if (!sender) {
             return res.status(404).json({ message: 'Sender not found' });
         }
 
-        // Send transaction using Ethereum blockchain
         const tx = await web3.eth.accounts.signTransaction({
             to: recipient,
             value: web3.utils.toWei(amount.toString(), 'ether'),
@@ -163,7 +156,6 @@ app.post('/api/ethereum-transactions', authenticateToken, async (req, res) => {
         }, sender.ethereumPrivateKey);
         const receipt = await web3.eth.sendSignedTransaction(tx.rawTransaction);
 
-        // Record transaction in MongoDB
         const transaction = new Transaction({
             from: sender.ethereumWalletAddress,
             to: recipient,
@@ -183,23 +175,19 @@ app.post('/api/bitcoin-transactions', authenticateToken, async (req, res) => {
     try {
         const { username, amount, recipient } = req.body;
         
-        // Find user
         const sender = await User.findOne({ username });
         if (!sender) {
             return res.status(404).json({ message: 'Sender not found' });
         }
 
-        // Build the transaction
         const txb = new bitcoin.TransactionBuilder(bitcoinNetwork);
-        txb.addInput(sender.bitcoinAddress, balance); // Include sender's unspent transaction output
-        txb.addOutput(recipient, amount); // Recipient and amount
-        txb.sign(0, bitcoin.ECPair.fromWIF(sender.bitcoinPrivateKey, bitcoinNetwork)); // Sign the transaction with sender's private key
+        txb.addInput(sender.bitcoinAddress, balance);
+        txb.addOutput(recipient, amount);
+        txb.sign(0, bitcoin.ECPair.fromWIF(sender.bitcoinPrivateKey, bitcoinNetwork));
 
-        // Broadcast the transaction
         const txHex = txb.build().toHex();
         const txId = await bitcoinClient.broadcast(txHex);
 
-        // Record transaction in MongoDB
         const transaction = new Transaction({
             from: sender.bitcoinAddress,
             to: recipient,
@@ -219,19 +207,15 @@ app.post('/api/meowcoin-transactions', authenticateToken, async (req, res) => {
     try {
         const { username, amount, recipient } = req.body;
         
-        // Find user
         const sender = await User.findOne({ username });
         if (!sender) {
             return res.status(404).json({ message: 'Sender not found' });
         }
 
-        // Create and sign Meowcoin transaction
         const rawTransaction = Meowcoin.createTransaction(sender.meowcoinPrivateKey, sender.meowcoinAddress, recipient, amount);
 
-        // Broadcast the transaction
         const txId = await Meowcoin.broadcastTransaction(rawTransaction);
 
-        // Record transaction in MongoDB
         const transaction = new Transaction({
             from: sender.meowcoinAddress,
             to: recipient,
